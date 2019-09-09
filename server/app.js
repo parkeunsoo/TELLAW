@@ -1,7 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var cookieParser = require('cookie-parser');
-
+var path = require('path');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var walletRouter = require('./routes/wallet');
@@ -17,17 +17,23 @@ models.sequelize.sync().then(()=>{
   console.log("connection fail!");
   console.log(err);
 });
-
+// set port
 app.set('port', process.env.PORT || 3000);
+
+// set jwt-secret
 app.set('jwt-secret', config.secret);
+
+// set initial view
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/wallet', walletRouter);
+app.use('/api/', indexRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/wallet', walletRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
